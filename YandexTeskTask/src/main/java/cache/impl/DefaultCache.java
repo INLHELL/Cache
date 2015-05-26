@@ -83,21 +83,23 @@ public class DefaultCache<K, V> implements Cache<K,V> {
     @Override
     public final V get(final K key) {
         V value = null;
-        this.readWriteLock.readLock().lock();
-        try {
-            if (key != null && this.map.containsKey(key)) {
-                final Node<K, V> node = this.map.get(key);
-                if (this.type == TYPE.LRU) {
-                    // If recentNodeQueue if full we will try to add new node during specified timeout
-                    this.recentNodeQueue.offer(node, REASONABLE_OFFER_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS);
+        if(key != null) {
+            this.readWriteLock.readLock().lock();
+            try {
+                if (this.map.containsKey(key)) {
+                    final Node<K, V> node = this.map.get(key);
+                    if (this.type == TYPE.LRU) {
+                        // If recentNodeQueue if full we will try to add new node during specified timeout
+                        this.recentNodeQueue.offer(node, REASONABLE_OFFER_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS);
+                    }
+                    value = node.getValue();
                 }
-                value = node.getValue();
+            } catch (InterruptedException e) {
+                // No actions required
+                e.printStackTrace();
+            } finally {
+                this.readWriteLock.readLock().unlock();
             }
-        } catch (InterruptedException e) {
-            // No actions required
-            e.printStackTrace();
-        } finally {
-            this.readWriteLock.readLock().unlock();
         }
         return value;
     }
