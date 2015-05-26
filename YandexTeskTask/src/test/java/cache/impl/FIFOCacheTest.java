@@ -10,13 +10,13 @@ import org.junit.rules.ExpectedException;
 /**
  * Created by user on 26.05.2015.
  */
-public class LRUCacheTest {
+public class FIFOCacheTest {
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
     @Test
     public void testSingleElementCache() {
-        final Cache<Integer, String> cache = new DefaultCache<>(TYPE.LRU, 1);
+        final Cache<Integer, String> cache = new DefaultCache<>(TYPE.FIFO, 1);
         cache.put(1, "a");
         cache.put(2, "b");
         Assert.assertNotNull(cache.get(2));
@@ -25,8 +25,8 @@ public class LRUCacheTest {
     }
 
     @Test
-    public void testPropagatedElementWillSurvive() {
-        final Cache<Integer, String> cache = new DefaultCache<>(TYPE.LRU, 3);
+    public void testPropagationViaGetWontWork() {
+        final Cache<Integer, String> cache = new DefaultCache<>(TYPE.FIFO, 3);
         cache.put(1, "a");
         cache.put(2, "b");
         cache.put(3, "c");
@@ -39,20 +39,20 @@ public class LRUCacheTest {
         cache.put(4, "d");
         cache.put(5, "e");
 
-        Assert.assertNotNull(cache.get(1));
+        Assert.assertNotNull(cache.get(3));
         Assert.assertNotNull(cache.get(4));
         Assert.assertNotNull(cache.get(5));
         Assert.assertNull(cache.get(2));
-        Assert.assertNull(cache.get(3));
-        Assert.assertEquals("a", cache.get(1));
+        Assert.assertNull(cache.get(1));
+        Assert.assertEquals("c", cache.get(3));
         Assert.assertEquals("d", cache.get(4));
         Assert.assertEquals("e", cache.get(5));
     }
 
 
     @Test
-    public void testPropagationWorkWhenNewValuePut() {
-        final Cache<Integer, String> cache = new DefaultCache<>(TYPE.LRU, 3);
+    public void testPropagationViaNewValueWontWork() {
+        final Cache<Integer, String> cache = new DefaultCache<>(TYPE.FIFO, 3);
         cache.put(1, "a");
         cache.put(2, "b");
         cache.put(3, "c");
@@ -65,19 +65,19 @@ public class LRUCacheTest {
         cache.put(4, "d");
         cache.put(5, "e");
 
-        Assert.assertNotNull(cache.get(1));
+        Assert.assertNotNull(cache.get(3));
         Assert.assertNotNull(cache.get(4));
         Assert.assertNotNull(cache.get(5));
+        Assert.assertNull(cache.get(1));
         Assert.assertNull(cache.get(2));
-        Assert.assertNull(cache.get(3));
-        Assert.assertEquals("aa", cache.get(1));
+        Assert.assertEquals("c", cache.get(3));
         Assert.assertEquals("d", cache.get(4));
         Assert.assertEquals("e", cache.get(5));
     }
 
     @Test
-    public void testPropagationWorkWhenNewValuesPut() {
-        final Cache<Integer, String> cache = new DefaultCache<>(TYPE.LRU, 3);
+    public void testPropagationWontWorkWhenNewValuesPut() {
+        final Cache<Integer, String> cache = new DefaultCache<>(TYPE.FIFO, 3);
         cache.put(1, "a");
         cache.put(2, "b");
         cache.put(3, "c");
@@ -110,8 +110,8 @@ public class LRUCacheTest {
 
 
     @Test
-    public void testPropagatedElementsWillSurvive() {
-        final Cache<Integer, String> cache = new DefaultCache<>(TYPE.LRU, 3);
+    public void testPropagatedElementsWontSurvive() {
+        final Cache<Integer, String> cache = new DefaultCache<>(TYPE.FIFO, 3);
         cache.put(1, "a");
         cache.put(2, "b");
         cache.put(3, "c");
@@ -132,20 +132,20 @@ public class LRUCacheTest {
         }
         cache.put(5, "e");
 
-        Assert.assertNotNull(cache.get(1));
-        Assert.assertNotNull(cache.get(2));
+        Assert.assertNotNull(cache.get(3));
+        Assert.assertNotNull(cache.get(4));
         Assert.assertNotNull(cache.get(5));
-        Assert.assertNull(cache.get(3));
-        Assert.assertNull(cache.get(4));
-        Assert.assertEquals("a", cache.get(1));
-        Assert.assertEquals("b", cache.get(2));
+        Assert.assertNull(cache.get(1));
+        Assert.assertNull(cache.get(2));
+        Assert.assertEquals("c", cache.get(3));
+        Assert.assertEquals("d", cache.get(4));
         Assert.assertEquals("e", cache.get(5));
     }
 
 
     @Test
-    public void testPropagationByPutNewValueAndGet() {
-        final Cache<Integer, String> cache = new DefaultCache<>(TYPE.LRU, 3);
+    public void testPropagationWontWorkByPutNewValueAndGet() {
+        final Cache<Integer, String> cache = new DefaultCache<>(TYPE.FIFO, 3);
         cache.put(1, "a");
         cache.put(2, "b");
         cache.put(3, "c");
@@ -171,8 +171,8 @@ public class LRUCacheTest {
         Assert.assertNotNull(cache.get(1));
         Assert.assertNotNull(cache.get(4));
         Assert.assertNotNull(cache.get(5));
-        Assert.assertNull(cache.get(3));
         Assert.assertNull(cache.get(2));
+        Assert.assertNull(cache.get(3));
         Assert.assertEquals("aa", cache.get(1));
         Assert.assertEquals("d", cache.get(4));
         Assert.assertEquals("e", cache.get(5));
@@ -181,7 +181,7 @@ public class LRUCacheTest {
 
     @Test
     public void testPutThrowsExceptionForNullKey() {
-        final Cache<Integer, String> cache = new DefaultCache<>(TYPE.LRU, 1);
+        final Cache<Integer, String> cache = new DefaultCache<>(TYPE.FIFO, 1);
         this.thrown.expect(NullPointerException.class);
         cache.put(null, "a");
         Assert.assertNull(cache.get(1));
@@ -189,14 +189,14 @@ public class LRUCacheTest {
 
     @Test
     public void testPutThrowsExceptionForNullValue() {
-        final Cache<Integer, String> cache = new DefaultCache<>(TYPE.LRU, 1);
+        final Cache<Integer, String> cache = new DefaultCache<>(TYPE.FIFO, 1);
         this.thrown.expect(NullPointerException.class);
         cache.put(1, null);
     }
 
     @Test
     public void testGetReturnsNullIfNullPassed() {
-        final Cache<Integer, String> cache = new DefaultCache<>(TYPE.LRU, 1);
+        final Cache<Integer, String> cache = new DefaultCache<>(TYPE.FIFO, 1);
         cache.put(1, "a");
         Assert.assertNull(cache.get(null));
         Assert.assertNotNull(cache.get(1));
