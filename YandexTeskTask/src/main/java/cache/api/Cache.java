@@ -11,12 +11,13 @@ public interface Cache<K, V> {
      * Returns the value associated with the passed key from the cache,
      * if key does not exist in the cache <b>null</b> will be returned.<br />
      * <b>Pay attention</b>, element that is <tt>put</tt> to the cache will be available for <tt>get</tt> operation
-     * after some timeout that depends current load (number of readers and writes) and the cache <tt>capacity</tt>.
+     * after some timeout that depends current load (number of readers and writes) and the cache <tt>capacity</tt>.<br / >
+     * Complexity of this operation in most cases (if hash code of <i>key objects<i/> is continuously uniform distributed)
+     * should be <b>O(1)</b>.<br />
      *
      * @param key key that will be used for value lookup
      * @return value associated withe the passed key or <b>null</b> if key does not exist
      */
-
     V get(K key);
 
     /**
@@ -24,13 +25,20 @@ public interface Cache<K, V> {
      * Depending of chosen strategy in case cache is full (its size is equal to specified <tt>capacity</tt>)
      * least recently used or last put node will be removed from the cache.<br />
      * <b>Pay attention</b>, element that is <tt>put</tt> to the cache will be available for <tt>get</tt> operation
-     * after some timeout that depends current load (number of readers and writes) and the cache <tt>capacity</tt>.
+     * after some timeout that depends current load (number of readers and writes) and the cache <tt>capacity</tt>.<br />
+     * Complexity of this operation in most cases (if hash code of <i>key objects<i/> is continuously uniform distributed)
+     * should be <b>O(1)</b>.<br /
      *
      * @param key   key associated with the value that will be added to the cache, must be <b>not null</b>, otherwise {@link NullPointerException} will be thrown
      * @param value value associated with the key that will be added to the cache, must be <b>not null</b>, otherwise {@link NullPointerException} will be thrown
      */
-
     void put(K key, V value);
+
+    /**
+     * Returns number of elements in the cache.
+     * @return number of elements in the cache
+     */
+    int size();
 
     /**
      * Cache type.

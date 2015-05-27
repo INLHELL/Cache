@@ -14,7 +14,9 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 /**
  * Created by Vladislav Fedotov (email:java.lang@yandex.ru) on 23.05.2015 as Yandex test task.
  *
- * This class represents data structure that could be used as cache with specific capacity.
+ * This class represents data structure that could be used as cache with specific capacity.<br />
+ * Maximal occupied size by this cache is equal to <tt>2*N + N/100<tt/>.<br />
+ *
  * If capacity of the cache exceeded at some point of time cache itself removes node based on two strategies:
  * <ul>
  *     <li>LRU - Least recently used node will be removed from the cache</li>
@@ -145,6 +147,15 @@ public class DefaultCache<K, V> implements Cache<K,V> {
         } finally {
             this.readWriteLock.writeLock().unlock();
         }
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int size() {
+        return this.map.size();
     }
 
     /**

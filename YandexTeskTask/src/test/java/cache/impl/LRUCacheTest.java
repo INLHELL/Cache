@@ -22,6 +22,7 @@ public class LRUCacheTest {
         Assert.assertNotNull(cache.get(2));
         Assert.assertNull(cache.get(1));
         Assert.assertEquals("b", cache.get(2));
+        Assert.assertTrue(cache.size() == 1);
     }
 
     @Test
@@ -32,7 +33,7 @@ public class LRUCacheTest {
         cache.put(3, "c");
         cache.get(1);
         try {
-            Thread.sleep(1L);
+            Thread.sleep(10L);
         } catch (InterruptedException e) {
             Assert.fail("InterruptedException should not be thrown ");
         }
@@ -47,6 +48,7 @@ public class LRUCacheTest {
         Assert.assertEquals("a", cache.get(1));
         Assert.assertEquals("d", cache.get(4));
         Assert.assertEquals("e", cache.get(5));
+        Assert.assertTrue(cache.size() == 3);
     }
 
 
@@ -58,7 +60,7 @@ public class LRUCacheTest {
         cache.put(3, "c");
         cache.put(1, "aa");
         try {
-            Thread.sleep(1L);
+            Thread.sleep(10L);
         } catch (InterruptedException e) {
             Assert.fail("InterruptedException should not be thrown ");
         }
@@ -73,6 +75,7 @@ public class LRUCacheTest {
         Assert.assertEquals("aa", cache.get(1));
         Assert.assertEquals("d", cache.get(4));
         Assert.assertEquals("e", cache.get(5));
+        Assert.assertTrue(cache.size() == 3);
     }
 
     @Test
@@ -84,7 +87,7 @@ public class LRUCacheTest {
         cache.put(1, "aa");
         cache.put(2, "bb");
         try {
-            Thread.sleep(1L);
+            Thread.sleep(10L);
         } catch (InterruptedException e) {
             Assert.fail("InterruptedException should not be thrown ");
         }
@@ -92,7 +95,7 @@ public class LRUCacheTest {
         cache.put(1, "aaa");
         cache.put(2, "bbb");
         try {
-            Thread.sleep(1L);
+            Thread.sleep(10L);
         } catch (InterruptedException e) {
             Assert.fail("InterruptedException should not be thrown ");
         }
@@ -106,6 +109,7 @@ public class LRUCacheTest {
         Assert.assertEquals("aaa", cache.get(1));
         Assert.assertEquals("bbb", cache.get(2));
         Assert.assertEquals("e", cache.get(5));
+        Assert.assertTrue(cache.size() == 3);
     }
 
 
@@ -118,7 +122,7 @@ public class LRUCacheTest {
         cache.get(1);
         cache.get(2);
         try {
-            Thread.sleep(1L);
+            Thread.sleep(10L);
         } catch (InterruptedException e) {
             Assert.fail("InterruptedException should not be thrown ");
         }
@@ -126,7 +130,7 @@ public class LRUCacheTest {
         cache.get(1);
         cache.get(2);
         try {
-            Thread.sleep(1L);
+            Thread.sleep(10L);
         } catch (InterruptedException e) {
             Assert.fail("InterruptedException should not be thrown ");
         }
@@ -140,6 +144,7 @@ public class LRUCacheTest {
         Assert.assertEquals("a", cache.get(1));
         Assert.assertEquals("b", cache.get(2));
         Assert.assertEquals("e", cache.get(5));
+        Assert.assertTrue(cache.size() == 3);
     }
 
 
@@ -152,7 +157,7 @@ public class LRUCacheTest {
         cache.get(1);
         cache.get(2);
         try {
-            Thread.sleep(1L);
+            Thread.sleep(10L);
         } catch (InterruptedException e) {
             Assert.fail("InterruptedException should not be thrown ");
         }
@@ -162,7 +167,7 @@ public class LRUCacheTest {
         cache.put(1, "aa");
         cache.get(4);
         try {
-            Thread.sleep(1L);
+            Thread.sleep(10L);
         } catch (InterruptedException e) {
             Assert.fail("InterruptedException should not be thrown ");
         }
@@ -176,6 +181,7 @@ public class LRUCacheTest {
         Assert.assertEquals("aa", cache.get(1));
         Assert.assertEquals("d", cache.get(4));
         Assert.assertEquals("e", cache.get(5));
+        Assert.assertTrue(cache.size() == 3);
     }
 
 
@@ -185,6 +191,7 @@ public class LRUCacheTest {
         this.thrown.expect(NullPointerException.class);
         cache.put(null, "a");
         Assert.assertNull(cache.get(1));
+        Assert.assertTrue(cache.size() == 0);
     }
 
     @Test
@@ -192,6 +199,7 @@ public class LRUCacheTest {
         final Cache<Integer, String> cache = new DefaultCache<>(TYPE.LRU, 1);
         this.thrown.expect(NullPointerException.class);
         cache.put(1, null);
+        Assert.assertTrue(cache.size() == 0);
     }
 
     @Test
@@ -200,5 +208,15 @@ public class LRUCacheTest {
         cache.put(1, "a");
         Assert.assertNull(cache.get(null));
         Assert.assertNotNull(cache.get(1));
+        Assert.assertTrue(cache.size() == 1);
+    }
+
+
+    @Test
+    public void testCacheSizeIsOne() {
+        final Cache<Integer, String> cache = new DefaultCache<>(TYPE.LRU, 10);
+        cache.put(1, "a");
+        Assert.assertNotNull(cache.get(1));
+        Assert.assertTrue(cache.size() == 1);
     }
 }
