@@ -189,7 +189,15 @@ public class DefaultCache<K, V> implements Cache<K,V> {
     private void dequeueIfFull() {
         if (this.map.size() == this.capacity) {
             this.map.remove(this.tail.getKey());
+            Node<K, V> removingNode = this.tail;
             this.tail = this.tail.getPrevious();
+
+            // Set all reference to null and let GC does its work
+            removingNode.setNext(null);
+            removingNode.setPrevious(null);
+            removingNode.setValue(null);
+            removingNode = null;
+
             if (this.tail != null) {
                 this.tail.setNext(null);
             }
